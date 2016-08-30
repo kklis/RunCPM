@@ -157,7 +157,8 @@ void _SetFile(uint16 fcbaddr, uint8* filename)
 	}
 }
 
-uint8 _findfirst(void) {
+uint8 _findfirst(uint8 dir)
+{
 	uint8 result = 0xff;
 	uint8 found = 0;
 	uint8 more = 1;
@@ -177,8 +178,11 @@ uint8 _findfirst(void) {
 			break;
 		}
 		if (found) {
-			_SetFile(dmaAddr, (uint8*)&FindFileData.cFileName[0]); // (todo) Create fake DIR entry
-			_RamWrite(dmaAddr, 0x00);
+			if (dir) {
+				_SetFile(dmaAddr, (uint8*)&FindFileData.cFileName[0]); // Create fake DIR entry
+				_RamWrite(dmaAddr, 0);	// Sets the user of the requested file correctly on DIR entry
+			}
+			_SetFile(tmpfcb, (uint8*)&FindFileData.cFileName[0]); // Set the file name onto the tmp FCB
 			result = 0x00;
 		} else {
 			FindClose(hFind);
@@ -187,7 +191,7 @@ uint8 _findfirst(void) {
 	return(result);
 }
 
-uint8 _findnext(void)
+uint8 _findnext(uint8 dir)
 {
 	uint8 result = 0xff;
 	uint8 found = 0;
@@ -208,8 +212,11 @@ uint8 _findnext(void)
 			break;
 		}
 		if (found) {
-			_SetFile(dmaAddr, (uint8*)&FindFileData.cFileName[0]);	// (todo) Create fake DIR entry
-			_RamWrite(dmaAddr, 0x00);
+			if (dir) {
+				_SetFile(dmaAddr, (uint8*)&FindFileData.cFileName[0]);	// Create fake DIR entry
+				_RamWrite(dmaAddr, 0);	// Sets the user of the requested file correctly on DIR entry
+			}
+			_SetFile(tmpfcb, (uint8*)&FindFileData.cFileName[0]); // Set the file name onto the tmp FCB
 			result = 0x00;
 		} else {
 			FindClose(hFind);
@@ -245,8 +252,7 @@ BOOL _signal_handler(DWORD signal)
 	{
 		_ungetch(3);
 		return(TRUE);
-	}
-	else {
+	} else {
 		return(FALSE);
 	}
 }

@@ -78,7 +78,7 @@ extern int32 Break; /* Breakpoint                                 */
 
 /* CP/M memory definitions */
 
-#define EXTRA	// Allocates extra memory
+#define EXTRA	// Allocates extra memory to CP/M programs
 
 #ifdef EXTRA
 	#define BDOSjmppage	0xfc
@@ -86,11 +86,13 @@ extern int32 Break; /* Breakpoint                                 */
 	#define BDOSpage	0xfe
 	#define BIOSpage	0xff
 #else
-	#define BDOSjmppage	0xec	// Default CP/M location
-	#define BIOSjmppage	0xfa	// Default CP/M location
+	#define BDOSjmppage	0xec	// Default 64K CP/M 2.2 location
+	#define BIOSjmppage	0xfa	// Default 64K CP/M 2.2 location
 	#define BDOSpage	0xfb
 	#define BIOSpage	0xfc
 #endif
+
+#define	tmpfcb	(BDOSpage<<8)+32		// FCB for DeleteFile (use of FindFirst/FindNext)
 
 #define ROMSTART (BDOSpage<<8)
 #define ROMSIZE 0x10000-ROMSTART
