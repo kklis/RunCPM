@@ -195,6 +195,21 @@ uint8 _Truncate(char* fn, uint8 rc)
 	return(result);
 }
 
+void _ExtendFile(char *fn, long fpos)
+{
+	SdFile sd;
+	long i;
+
+	if (sd.open(fn, O_WRITE | O_APPEND)) {
+		if (fpos > sd.fileSize()) {
+			for (i = 0; i < sd.fileSize() - fpos; i++) {
+				sd.write((uint8_t)0);
+			}
+		}
+		sd.close();
+	}
+}
+
 /* Console abstraction functions */
 /*===============================================================================*/
 

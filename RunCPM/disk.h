@@ -313,6 +313,7 @@ uint8 _ReadSeq(uint16 fcbaddr)
 	if (_SelectDisk(F->dr)) {
 		_GetFile(fcbaddr, &filename[0]);
 #ifdef ARDUINO
+		_ExtendFile((char*)filename, fpos);
 		file = sd.open((char*)filename, O_READ);
 #else
 		file = _fopen_r(&filename[0]);
@@ -377,6 +378,7 @@ uint8 _WriteSeq(uint16 fcbaddr)
 		if (!RW) {
 			_GetFile(fcbaddr, &filename[0]);
 #ifdef ARDUINO
+			_ExtendFile((char*)filename, fpos);
 			file = sd.open((char*)filename, O_RDWR);
 #else
 			file = _fopen_rw(&filename[0]);
@@ -436,6 +438,7 @@ uint8 _ReadRand(uint16 fcbaddr)
 	if (_SelectDisk(F->dr)) {
 		_GetFile(fcbaddr, &filename[0]);
 #ifdef ARDUINO
+		_ExtendFile((char*)filename, fpos);
 		file = sd.open((char*)filename, O_READ);
 #else
 		file = _fopen_r(&filename[0]);
@@ -495,6 +498,7 @@ uint8 _WriteRand(uint16 fcbaddr)
 		if (!RW) {
 			_GetFile(fcbaddr, &filename[0]);
 #ifdef ARDUINO
+			_ExtendFile((char*)filename, fpos);
 			file = sd.open((char*)filename, O_RDWR);
 #else
 			file = _fopen_rw(&filename[0]);
