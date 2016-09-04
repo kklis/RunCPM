@@ -1,4 +1,4 @@
-program Arduino;
+program led;
 
 const
   INPUT = 0;
@@ -14,4 +14,4 @@ begin
   readln(value);
   Bdos(220, (pin shl 8) + OUTPUT);
   Bdos(222, (pin shl 8) + value);
-end.
+end.
