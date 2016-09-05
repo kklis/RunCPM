@@ -568,10 +568,13 @@ void _Bios(void)
 		HL = BC;			// HL=BC=No translation (1:1)
 		break;
 	default:				// Unimplemented calls get listed
+#ifdef DEBUG
 		_puts("\r\nUnimplemented BIOS call.\r\n");
 		_puts("C = 0x");
 		_puthex8(ch);
 		_puts("\r\n");
+#endif
+		break;
 	}
 #ifdef DEBUGLOG
 	_logBiosOut(ch);
@@ -960,10 +963,13 @@ void _Bdos(void)
 		Unimplemented calls get listed
 		*/
 	default:
+#ifdef DEBUG
 		_puts("\r\nUnimplemented BDOS call.\r\n");
 		_puts("C = 0x");
 		_puthex8(ch);
 		_puts("\r\n");
+#endif
+		break;
 	}
 
 	// CP/M BDOS does this before returning
