@@ -49,7 +49,6 @@ int _SelectDisk(uint8 dr)
 
 	if (dr) {
 		disk[0] += (dr - 1);
-		_RamWrite(0x0004, dr - 1);
 	} else {
 		disk[0] += (_RamRead(0x0004) & 0x0f);
 	}
