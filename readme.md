@@ -36,3 +36,4 @@ There's no need to create clumsy disk images. Just put your CP/M programs and fi
 
 RunCPM needs a binary copy of the CP/M CCP to be on the same folder as RunCPM.exe. The one provided is CPM22.bin, copyright 1979 from Digital Research. Other CCPs may work as well, your mileage may vary. ZCPR, for example, is also included.
 
+When using RunCPM on case sensitive filesystem (such as Linux ext2/3/4), make sure that all file and directory names are uppercase. For example you need A/MBASIC.COM instead of a/mbasic.com to make it work.
