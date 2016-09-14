@@ -79,7 +79,7 @@ int _sys_renamefile(uint8 *filename, uint8 *newname) {
 #ifdef DEBUGLOG
 void _sys_logbuffer(uint8 *buffer) {
 #ifdef CONSOLELOG
-	_puts((char *)buffer);
+	puts((char *)buffer);
 #else
 	SdFile f;
 	uint8 s = 0;
@@ -90,8 +90,8 @@ void _sys_logbuffer(uint8 *buffer) {
 		f.flush();
 		f.close();
 	}
-}
 #endif
+}
 #endif
 
 bool _sys_extendfile(char *fn, long fpos)
@@ -291,7 +291,7 @@ void _putch(uint8 ch) {
 }
 
 void _clrscr(void) {
-	Serial.println("\b[H\b[J");
+	Serial.println("\e[H\e[J");
 }
 
 #endif

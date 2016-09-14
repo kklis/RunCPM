@@ -1112,20 +1112,20 @@ static const char *CPMCalls[41] =
 #endif
 
 /* Memory management    */
-static uint8 GET_BYTE(register uint32 Addr) {
+uint8 GET_BYTE(register uint32 Addr) {
 	return _RamRead(Addr & ADDRMASK);
 }
 
-static void PUT_BYTE(register uint32 Addr, register uint32 Value) {
+void PUT_BYTE(register uint32 Addr, register uint32 Value) {
 	_RamWrite(Addr & ADDRMASK, Value);
 }
 
-static void PUT_WORD(register uint32 Addr, register uint32 Value) {
+void PUT_WORD(register uint32 Addr, register uint32 Value) {
 	_RamWrite(Addr & ADDRMASK, Value);
 	_RamWrite((Addr + 1) & ADDRMASK, Value >> 8);
 }
 
-static uint16 GET_WORD(register uint32 a) {
+uint16 GET_WORD(register uint32 a) {
 	return GET_BYTE(a) | (GET_BYTE(a + 1) << 8);
 }
 
@@ -1194,8 +1194,17 @@ void memdump(uint16 pos) {
 	uint16 h = pos;
 	uint16 c = pos;
 	uint8 l, i;
-	uint8 ch;
+	uint8 ch = pos & 0xff;
 
+	_puts("       ");
+	for (i = 0; i < 16; i++) {
+		_puthex8(ch++ & 0x0f);
+		_puts(" ");
+	}
+	_puts("\r\n");
+	_puts("       ");
+	for (i = 0; i < 16; i++)
+		_puts("---");
 	_puts("\r\n");
 	for (l = 0; l < 16; l++) {
 		_puthex16(h);
@@ -1281,8 +1290,9 @@ void Z80debug(void) {
 	static const char Flags[9] = "SZ5H3PNC";
 	uint8 J, I;
 	unsigned int bpoint;
+	uint8 loop = TRUE;
 
-	while (1) {
+	while (loop) {
 		pos = PC;
 		_puts("\r\n");
 		_puts("BC:");  _puthex16(BC);
@@ -1312,23 +1322,35 @@ void Z80debug(void) {
 
 		_puts("\r\n");
 		_puts("Command|? : ");
-		ch = _getche();
-		if (ch == 't')
+		ch = _getch();
+		if (ch > 21 && ch < 127)
+			_putch(ch);
+		switch(ch) {
+		case 't':
+			loop = FALSE;
 			break;
-		if (ch == 'c') {
+		case 'c':
+			loop = FALSE;
 			_puts("\r\n");
 			Debug = 0;
 			break;
-		}
-		if (ch == 'b') memdump(BC);
-		if (ch == 'd') memdump(DE);
-		if (ch == 'h') memdump(HL);
-		if (ch == 'p') memdump(PC & 0xFF00);
-		if (ch == 's') memdump(SP & 0xFF00);
-		if (ch == 'x') memdump(IX & 0xFF00);
-		if (ch == 'y') memdump(IY & 0xFF00);
-		if (ch == 'a') memdump(dmaAddr);
-		if (ch == 'l') {
+		case 'b':
+			_puts("\r\n"); memdump(BC); break;
+		case 'd':
+			_puts("\r\n"); memdump(DE); break;
+		case 'h':
+			_puts("\r\n"); memdump(HL); break;
+		case 'p':
+			_puts("\r\n"); memdump(PC & 0xFF00); break;
+		case 's':
+			_puts("\r\n"); memdump(SP & 0xFF00); break;
+		case 'x':
+			_puts("\r\n"); memdump(IX & 0xFF00); break;
+		case 'y':
+			_puts("\r\n"); memdump(IY & 0xFF00); break;
+		case 'a':
+			_puts("\r\n"); memdump(dmaAddr); break;
+		case 'l':
 			_puts("\r\n");
 			I = 16;
 			l = pos;
@@ -1336,40 +1358,41 @@ void Z80debug(void) {
 				_puthex16(l);
 				_puts(" : ");
 				l += Disasm(l);
+				_puts("\r\n");
 				I--;
 			}
-		}
-		if (ch == 'B') {
+			break;
+		case 'B':
 			_puts(" Addr: ");
 			scanf("%04x", &bpoint);
 			Break = bpoint;
 			_puts("Breakpoint set to ");
 			_puthex16(Break);
 			_puts("\r\n");
-		}
-		if (ch == 'C') {
+			break;
+		case 'C':
 			Break = -1;
 			_puts(" Breakpoint cleared\r\n");
-		}
-		if (ch == 'L') {
+			break;
+		case 'D':
 			_puts(" Addr: ");
 			scanf("%04x", &bpoint);
-			_puts("\r\n");
+			memdump(bpoint);
+			break;
+		case 'L':
+			_puts(" Addr: ");
+			scanf("%04x", &bpoint);
 			I = 16;
 			l = bpoint;
 			while (I > 0) {
 				_puthex16(l);
 				_puts(" : ");
 				l += Disasm(l);
+				_puts("\r\n");
 				I--;
 			}
-		}
-		if (ch == 'M') {
-			_puts(" Addr: ");
-			scanf("%04x", &bpoint);
-			memdump(bpoint);
-		}
-		if (ch == '?') {
+			break;
+		case '?':
 			_puts("\r\n");
 			_puts("Lowercase commands:\r\n");
 			_puts("  t - traces to the next instruction\r\n");
@@ -1386,8 +1409,11 @@ void Z80debug(void) {
 			_puts("Uppercase commands:\r\n");
 			_puts("  B - Sets breakpoint at address\r\n");
 			_puts("  C - Clears breakpoint\r\n");
+			_puts("  D - Dumps memory at address\r\n");
 			_puts("  L - Disassembles at address\r\n");
-			_puts("  M - Dumps memory at address\r\n");
+			break;
+		default:
+			_puts(" ???\r\n");
 		}
 	}
 }
