@@ -122,8 +122,10 @@ void _GetFile(uint16 fcbaddr, uint8* filename)
 		}
 		i++;
 	}
-	*(filename++) = '.';
 	i = 0;
+	if (F->tp[i] > 32) {
+		*(filename++) = '.';
+	}
 	while (i < 3) {
 		if (F->tp[i] > 32) {
 			*(filename++) = F->tp[i];
